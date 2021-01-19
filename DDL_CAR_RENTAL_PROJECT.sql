@@ -1,0 +1,249 @@
+CREATE TABLE EMPLOYEE
+(
+EMPLOYEE_ID             INT NOT NULL,
+FIRST_NAME              VARCHAR2(50),
+LAST_NAME               VARCHAR2(50),
+MIDDLE_NAME             VARCHAR2(50),
+SEX                     VARCHAR2(1) CHECK(SEX IN('M','F')),
+SSN                     VARCHAR2(20),
+ANNUAL_SARARY           NUMBER(12,2),
+TAX_DEDUCTION           VARCHAR2(2),
+BIRTH_DATE              DATE,
+DATE_STARTED            DATE,
+HIGHEST_DEGREE_EARNED   VARCHAR2(50),
+DATE_GRADUATED          DATE,
+NAME_OF_SPOUSE          VARCHAR2(255),
+CELL_PHONE              VARCHAR2(50),
+STREET_ADDRESS          VARCHAR2(255),
+ZIPCODE                 VARCHAR2(5),
+CITY                    VARCHAR2(50),
+STATE_LIVING_IN         VARCHAR2(50),
+COUNTRY                 VARCHAR2(50),
+MARITAL_STATUS          VARCHAR2(2) CHECK(MARITAL_STATUS   IN('S','M', 'D', 'W')),
+CONSTRAINT EMPLOYEE_pk  PRIMARY KEY(EMPLOYEE_ID)
+);
+
+CREATE TABLE CERTIFICATES
+(
+EMPLOYEE_ID                     INT NOT NULL,
+CERTIFICATE_NAME                VARCHAR2(255),
+DATE_EARNED                     DATE,
+CONSTRAINT CERTIFICATES_PK  PRIMARY KEY(EMPLOYEE_ID)
+);
+
+create table managed_by
+(
+manger_ID                   int not null,
+employee_ID                 int not null,
+date_started_manager        date,
+CONSTRAINT managed_by_PK    PRIMARY KEY(employee_ID),
+CONSTRAINT EMPLOYEES_MANAGER_FK
+FOREIGN KEY(manger_ID)      REFERENCES EMPLOYEE(EMPLOYEE_ID),
+CONSTRAINT EMPLOYEE_BEING_MANAGED_FK
+FOREIGN KEY(employee_ID)      REFERENCES EMPLOYEE(EMPLOYEE_ID)
+);
+
+
+CREATE TABLE OFFICE
+(
+OFFICE_ID                   INT NOT NULL,
+OFFICE_NAME                 VARCHAR2(50),
+PHONE_NUMBER                VARCHAR2(50),
+FAX_NUBMER                  VARCHAR2(50),
+EMAIL                       VARCHAR2(80),
+COST_OF_LOCATION            NUMBER(14,2),
+STREET_ADDRESS              VARCHAR2(50),
+ZIPCODE                     VARCHAR2(50),
+CITY                        VARCHAR2(50),
+STATE_LOCATED               VARCHAR2(50),
+COUNTRY                     VARCHAR2(50),
+CONSTRAINT OFFICE_PK        PRIMARY KEY(OFFICE_ID)
+);
+
+CREATE TABLE DAYS_OPEN
+(
+OFFICE_ID                       INT NOT NULL,
+OPEN_DAYS                       VARCHAR2(50),
+CONSTRAINT DAYS_OPEN_PK         PRIMARY KEY(OFFICE_ID)
+);
+
+CREATE TABLE MANAGES_OFFICE
+(
+MANAGER_ID                      INT NOT NULL,
+OFFICE_ID                       INT NOT NULL,
+DATE_STARTED                    DATE,
+CONSTRAINT  MANAGES_OFFICE_PK   PRIMARY KEY(MANAGER_ID),
+CONSTRAINT OFFICE_MANAGER_FK
+FOREIGN KEY(MANAGER_ID)         REFERENCES EMPLOYEE(EMPLOYEE_ID),
+CONSTRAINT OFFICE_MANAGES_AT_FK
+FOREIGN KEY(OFFICE_ID)          REFERENCES OFFICE(OFFICE_ID)
+);
+
+CREATE TABLE WORKS_AT_OFFICE
+(
+EMPLOYEE_ID                         INT NOT NULL,
+OFFICE_ID                           INT NOT NULL,
+DATE_STARTED                        DATE,
+CONSTRAINT  EMPLOYEE_OFFICE_PK      PRIMARY KEY(EMPLOYEE_ID),
+
+CONSTRAINT  EMPLOYEE_OFFICE_FK
+FOREIGN KEY(EMPLOYEE_ID)            REFERENCES EMPLOYEE(EMPLOYEE_ID),
+CONSTRAINT  OFFICE_WORK_AT_FK
+FOREIGN KEY(OFFICE_ID)              REFERENCES OFFICE(OFFICE_ID)
+);
+
+CREATE TABLE CLIENT_CAR_OWNER
+(
+CLIENT_ID                           INT NOT NULL,
+FIRST_NAME                          VARCHAR2(50),
+LAST_NAME                           VARCHAR2(50),
+MIDDLE_NAME                         VARCHAR2(50),      
+ZIPCODE                             VARCHAR2(50),
+CITY                                VARCHAR2(50),
+STATE_LOCATED                       VARCHAR2(50),
+COUNTRY                             VARCHAR2(50),
+CELL_PHONE                          VARCHAR2(50),
+BIRTH_DATE                          DATE,
+EMAIL                               VARCHAR2(80),
+CREIDT_SCORE                        NUMBER(3),
+CONSTRAINT CLIENT_CAR_OWNER_PK      PRIMARY KEY(CLIENT_ID)
+);
+
+CREATE TABLE CHECKS_CLIENT
+(
+CLIENT_ID                           INT NOT NULL,
+EMPLOYEE_ID                         INT NOT NULL,
+DATE_CHECKED                        DATE,
+CONSTRAINT CHECKS_CLIENT_PK         PRIMARY KEY(CLIENT_ID),
+CONSTRAINT  CHECKING_EMPLOYEE_FK
+FOREIGN KEY(EMPLOYEE_ID)            REFERENCES EMPLOYEE(EMPLOYEE_ID),
+CONSTRAINT  CLIENT_CHECKED_FK
+FOREIGN KEY(CLIENT_ID)              REFERENCES CLIENT_CAR_OWNER(CLIENT_ID)
+);
+
+CREATE TABLE VEHICLE
+(
+CAR_VIN                             INT NOT NULL,
+LICENSE_PLATE                       VARCHAR2(20),
+YEAR_REGISTERED                     DATE,
+CAR_CLASS                           VARCHAR2(50),
+MANUFACTURER                        VARCHAR2(50),
+COLOR                               VARCHAR2(50),
+COST_PER_EXTRA_MILE                 NUMBER(4,2),
+LISTED                              VARCHAR2(3) CHECK(LISTED   IN('YES', 'NO')),
+STATE_REGISTERED                    VARCHAR2(50),
+MILEAGE                             NUMBER(14,2),
+NUMBER_OF_DOORS                     NUMBER(2),
+CAR_MODEL                           VARCHAR2(50),
+MODEL_YEAR                          DATE,
+WEEKLY_COST                         NUMBER(10,2),
+MONTHLY_COST                        NUMBER(10,2),
+CONSTRAINT VEHICLE_PK               PRIMARY KEY(CAR_VIN)
+);
+
+CREATE TABLE LIST_VEHICLE
+(
+CAR_VIN                             INT NOT NULL,
+CLIENT_ID                           INT NOT NULL,
+DATE_LISTED                         DATE,
+CONSTRAINT LIST_VEHICLE_PK          PRIMARY KEY(CAR_VIN),
+CONSTRAINT  CLIENT_VEHICLE_FK
+FOREIGN KEY(CAR_VIN)                REFERENCES VEHICLE(CAR_VIN),
+CONSTRAINT  CLIENT_OWNS_FK
+FOREIGN KEY(CLIENT_ID)              REFERENCES CLIENT_CAR_OWNER(CLIENT_ID)
+);
+
+CREATE TABLE CUSTOMER
+(
+CUSTOMER_ID                         INT NOT NULL,
+FIRST_NAME                          VARCHAR2(50),
+LAST_NAME                           VARCHAR2(50),
+MIDDLE_NAME                         VARCHAR2(50),
+CELL_PHONE                          VARCHAR2(50),
+BIRTH_DATE                          DATE,
+EMAIL                               VARCHAR2(80),
+DRIVERS_LICENSE_NO                  VARCHAR2(50),
+DRIVERS_LICENSE_STATE               VARCHAR2(50),
+CONSTRAINT CUSTOMER_PK              PRIMARY KEY(CUSTOMER_ID)
+);
+
+CREATE TABLE REVIEW
+(
+REVIEW_ID                           INT NOT NULL,
+CLIENT_ID                           INT NOT NULL,
+CUSTOMER_ID                         INT NOT NULL,
+REIVEW_BODY                         VARCHAR2(4000),
+RATING                              NUMBER(1),
+CONSTRAINT REVIEW_PK                PRIMARY KEY(REVIEW_ID),
+CONSTRAINT  CLIENT_REVIEW_FK
+FOREIGN KEY(CLIENT_ID)              REFERENCES CLIENT_CAR_OWNER(CLIENT_ID),
+CONSTRAINT  CUSTOMER_REVIEW_FK
+FOREIGN KEY(CUSTOMER_ID)            REFERENCES CUSTOMER(CUSTOMER_ID)
+);
+
+CREATE TABLE PAYMENT
+(
+PAYMENT_ID                          INT NOT NULL,
+TOTAL                               NUMBER(10,2),
+PAYMENT_DATE                        DATE,
+CREDIT_NUMBER                       VARCHAR2(20),
+CREDIT_EXP                          DATE,
+TAXES                               NUMBER(12,2),
+FEES                                NUMBER(10, 2),
+CONSTRAINT PAYEMNT_PK               PRIMARY KEY(PAYMENT_ID)
+);
+
+
+CREATE TABLE TRANSACTIONS
+(
+TRANSACTION_ID                      INT NOT NULL,
+CUSTOMER_ID                         INT NOT NULL,
+VEHICLE_ID                          INT NOT NULL,
+PAYMENT_ID                          INT NOT NULL,
+price                               NUMBER(10,2),
+CLIENT_APPROVAL                     VARCHAR2(3) CHECK(CLIENT_APPROVAL IN('YES', 'NO')),
+REQUEST_START                       DATE,
+REQUEST_END                         DATE,
+CONSTRAINT TRANSACTION_ID_PK        PRIMARY KEY(TRANSACTION_ID),
+CONSTRAINT  CUSTOMER_TRANSACTION_FK
+FOREIGN KEY(CUSTOMER_ID)            REFERENCES CUSTOMER(CUSTOMER_ID),
+CONSTRAINT  VEHICLE_TRANSACTION_FK
+FOREIGN KEY(VEHICLE_ID)             REFERENCES VEHICLE(CAR_VIN),
+CONSTRAINT  PAYMENT_TRANSACTION_FK
+FOREIGN KEY(PAYMENT_ID)             REFERENCES PAYMENT(PAYMENT_ID)
+);
+
+CREATE TABLE RECIEVES_PAYMENT
+(
+PAYMENT_ID                          INT NOT NULL,
+CLIENT_ID                           INT NOT NULL,
+DATE_RECEIVED                       DATE,
+CONSTRAINT RECIEVES_PAYMENT_PK      PRIMARY KEY(PAYMENT_ID),
+CONSTRAINT  RECEIVING_CLIENT_FK
+FOREIGN KEY(CLIENT_ID)              REFERENCES CLIENT_CAR_OWNER(CLIENT_ID),
+CONSTRAINT  PAYMENT_RECEIVED_FK
+FOREIGN KEY(PAYMENT_ID)             REFERENCES PAYMENT(PAYMENT_ID)
+);
+
+CREATE TABLE ACCIDENT
+(
+ACCIDENT_ID                         INT NOT NULL,
+CAR_VIN                             INT NOT NULL,
+CUSTOMER_ID                         INT NOT NULL,
+DAMAGE_COST                         NUMBER(15,2),
+OFFICER_FIRST_NAME                  VARCHAR2(50),
+OFFICER_LAST_NAME                   VARCHAR2(50),
+SUMMARY_REPORT                      VARCHAR2(3000),
+DATE_OF_ACCIDENT                    DATE,
+ACCIDENT_DESCRIPTION                VARCHAR2(4000),
+STREET_ADDRESS                      VARCHAR2(50),
+ZIPCODE                             VARCHAR2(50),
+CITY                                VARCHAR2(50),
+STATE_LOCATED                       VARCHAR2(50),
+COUNTRY                             VARCHAR2(50),
+CONSTRAINT ACCIDENT_PK              PRIMARY KEY(ACCIDENT_ID),
+CONSTRAINT  ACCIDENT_CUSTOMER_FK
+FOREIGN KEY(CUSTOMER_ID)            REFERENCES CUSTOMER(CUSTOMER_ID),
+CONSTRAINT  ACCIDENT_VEHICLE_FK
+FOREIGN KEY(CAR_VIN)                REFERENCES VEHICLE(CAR_VIN)
+);
